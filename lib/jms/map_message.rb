@@ -18,25 +18,22 @@ module JMS::MapMessage
 
   # Copy values from supplied hash into this MapMessage
   # Converts Ruby types to Java native Data types as follows:
-  #   Fixnum   => long
+  #   Integer  => long
   #   Float    => double
-  #   Bignum   => long
   #   true     => boolean
   #   false    => boolean
   #   nil      => null
   #   Otherwise it calls ::to_s on the supplied data type
   def data=(data)
     data.each_pair do |key, val|
-      case
-      when val.class == Fixnum # 1
+      case val
+      when Integer # 1 or 11111111111111111 (Bignum)
         setLong(key.to_s, val)
-      when val.class == Float #1.1
+      when Float # 1.1
         setDouble(key.to_s, val)
-      when val.class == Bignum # 11111111111111111
-        setLong(key.to_s, val)
-      when (val.class == TrueClass) || (val.class == FalseClass)
+      when true, false
         setBoolean(key.to_s, val)
-      when val.class == NilClass
+      when nil
         setObject(key.to_s, val)
       else
         setString(key.to_s, val.to_s)
